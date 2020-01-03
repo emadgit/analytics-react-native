@@ -185,23 +185,23 @@ class RNAnalyticsModule(context: ReactApplicationContext): ReactContextBaseJavaM
 
     @ReactMethod
     fun track(event: String, properties: ReadableMap, integrations: ReadableMap, context: ReadableMap) =
-        analytics.track(event, Properties() from properties, this.getOptions(integrations))
+        analytics.track(event, Properties() from properties, this.getOptions(integrations), Options() from context)
 
     @ReactMethod
     fun screen(name: String, properties: ReadableMap, integrations: ReadableMap, context: ReadableMap) =
-        analytics.screen(null, name, Properties() from properties, this.getOptions(integrations))
+        analytics.screen(null, name, Properties() from properties, this.getOptions(integrations), Options() from context)
 
     @ReactMethod
     fun identify(userId: String, traits: ReadableMap, integrations: ReadableMap, context: ReadableMap) =
-        analytics.identify(userId, Traits() from traits, this.getOptions(integrations))
+        analytics.identify(userId, Traits() from traits, this.getOptions(integrations), Options() from context)
 
     @ReactMethod
     fun group(groupId: String, traits: ReadableMap, integrations: ReadableMap, context: ReadableMap) =
-        analytics.group(groupId, Traits() from traits, this.getOptions(integrations))
+        analytics.group(groupId, Traits() from traits, this.getOptions(integrations), Options() from context)
 
     @ReactMethod
     fun alias(newId: String, context: ReadableMap, integrations: ReadableMap) =
-        analytics.alias(newId, this.getOptions(integrations))
+        analytics.alias(newId, this.getOptions(integrations), Options() from context)
 
     @ReactMethod
     fun reset() =
@@ -225,7 +225,9 @@ class RNAnalyticsModule(context: ReactApplicationContext): ReactContextBaseJavaM
 }
 
 private infix fun<T: ValueMap> T.from(source: ReadableMap): T {
-    putAll(source.toHashMap())
+    source.toHashMap().forEach {(key, value) -> 
+        putContext(key, value)
+    }
 
     return this
 }
